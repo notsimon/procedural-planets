@@ -2,6 +2,8 @@
 #include "Planet.hh"
 #include "PlanetTile.hh"
 
+#include <iostream>
+
 void PlanetLOD::GenerateQuadtree(Planet& planet) {
 	PlanetLOD* roots[6];
 
@@ -41,8 +43,10 @@ void PlanetLOD::GenerateQuadtree(Planet& planet) {
 	//}
 
 	for (uchar i = 0; i < 6; i++) {
-		roots[i]->addChild(new PlanetTile(*roots[i]));
-		planet.addChild(roots[i]);
+		PlanetLOD* node = roots[i];
+		node->_tile = new PlanetTile(*roots[i], DefaultResolution);
+		node->addChild(node->_tile);
+		planet.addChild(node);
 	}
 
 	// TODO : check roots ref counters
@@ -50,34 +54,46 @@ void PlanetLOD::GenerateQuadtree(Planet& planet) {
 
 PlanetLOD::PlanetLOD(uchar side)
 	: osg::Group(),
-	  _parent(0),
 	  _side(side),
 	  _origin(0, 0),
-	  _depth(0) {
+	  _depth(0),
+	  _parent(0) {
 }
 
 PlanetLOD::PlanetLOD(PlanetLOD* parent, const Vec2f origin)
 	: osg::Group(),
-	  _parent(parent),
 	  _side(parent->_side),
 	  _origin(origin),
-	  _depth(parent->_depth + 1) {
+	  _depth(parent->_depth + 1),
+	  _parent(parent) {
 }
 
 PlanetLOD::PlanetLOD()
 	: osg::Group(),
-	  _parent(0),
 	  _side(UCHAR_MAX),
 	  _origin(0, 0),
-	  _depth(0) {
+	  _depth(0),
+	  _parent(0) {
 }
 
 PlanetLOD::PlanetLOD(const PlanetLOD& copy, const osg::CopyOp& copyop)
 	: osg::Group(copy, copyop),
-	  _parent(copy._parent),
 	  _side(copy._side),
 	  _origin(copy._origin),
-	  _depth(copy._depth) {
+	  _depth(copy._depth),
+	  _parent(copy._parent) {
+}
+
+void PlanetLOD::traverse(osg::NodeVisitor& nv) {
+	if (isLeaf()) {
+		_tile->accept(nv);
+	}
+	else {
+		for (int i = 0; i < 4; i++)
+			_children[i]->accept(nv);
+	}
+
+	osg::Group::traverse(nv);
 }
 
 Vec3f PlanetLOD::projectOnSphere(float x, float y) const {

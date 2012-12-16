@@ -8,7 +8,7 @@ class PlanetTile : public osg::Geode {
 public:
 	META_Node(osg, PlanetTile);
 
-	PlanetTile(const PlanetLOD& node);
+	PlanetTile(const PlanetLOD& node, const int resolution);
 
 private:
 	PlanetTile();
