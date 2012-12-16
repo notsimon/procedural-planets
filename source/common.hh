@@ -20,9 +20,3 @@ using osg::Vec4f;
 #include <osg/Matrixf>
 
 typedef osg::Matrixf Matrix4f;
-
-// DEFINES
-
-#define PATCH_GRID_SIZE 16
-#define PATCH_MAX_LOD 6
-#define PATCH_LOD_DISTANCE 2
