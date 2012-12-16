@@ -1,0 +1,5 @@
+*.[oad]
+build
+.lock-waf*
+.waf*
+.DS_Store
