@@ -52,13 +52,25 @@ PlanetTile::PlanetTile(const PlanetLOD& node, const uint resolution)
 
 	// vertices normals
 	osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array(resolution * resolution);
-
-	for (uint i = 0; i < resolution; i++)
-		for (uint j = 0; j < resolution; j++) {
+	Vec3f edges[4];
+	Vec3f normals_tmp[2];
+	for (uint i = 1; i < resolution - 1; i++)
+		for (uint j = 1; j < resolution - 1; j++) {
 			const uint idx = i * resolution + j;
 
-			// normal - TEMPORARY
-			normals->at(idx) = positions->at(idx);
+			edges[0] = positions->at((i - 1) * resolution + j);
+			edges[1] = positions->at((i + 1) * resolution + j);
+			edges[2] = positions->at(i * resolution + (j - 1));
+			edges[3] = positions->at(i * resolution + (j + 1));
+
+			for (int k = 0; k < 4; k++)
+				edges[k] -= positions->at(idx);
+
+			normals_tmp[0] = edges[2] ^ edges[0];
+			normals_tmp[1] = edges[3] ^ edges[1];
+
+			//normals->at(idx) = positions->at(idx);
+			normals->at(idx) = normals_tmp[0] + normals_tmp[1];
 			normals->at(idx).normalize();
 		}
 		
