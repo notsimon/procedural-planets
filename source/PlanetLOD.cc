@@ -50,9 +50,6 @@ void PlanetLOD::GenerateQuadtree(Planet& planet) {
 		// add root to the planet's childs
 		planet.addChild(node);
 	}
-
-	trees[0]->split();
-	trees[0]->merge();
 }
 
 PlanetLOD::PlanetLOD(uchar side)
@@ -115,34 +112,15 @@ PlanetLOD::PlanetLOD(const PlanetLOD& copy, const osg::CopyOp& copyop)
 void PlanetLOD::traverse(osg::NodeVisitor& nv) {
 	osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(&nv);
 	if (cv) {
-		float dist = cv->getDistanceToViewPoint(_center, true);
+		float distance = cv->getDistanceToViewPoint(_center, true);
 		if (isLeaf()) { // leaf node
 			if (_depth < PATCH_MAX_LOD // maximal depth
-			&& dist < PATCH_LOD_DISTANCE * size() /** radius_*/) { // too close, must be broken!
-				//std::cout << "split (" << dist << ") : " << &node << std::endl;
+			 && distance < PATCH_LOD_DISTANCE * size() /** radius_*/)
 				split();
-
-				//for (Quadtree* child : node.childs)
-		        //    addPatch(*child);
-
-		        //removePatch(node);
-			}
 		}
 		else {
-			if (dist > PATCH_LOD_DISTANCE * size()/* * radius_*/) { // to far, must be merged
-				/*for (int c = 0; c < 4; c++) {
-					DepthTraversal traversal(neib);
-					PlanetLOD* node;
-					while ((node = traversal.next()))
-				}
-				for (Quadtree* child : node.childs)
-					child->depthTraversal ([=] (Quadtree& node) {
-						removePatch(node);
-					});*/
-
+			if (distance > PATCH_LOD_DISTANCE * size()/* * radius_*/)
 				merge();
-				//addPatch(node);
-			}
 		}
 	}
 

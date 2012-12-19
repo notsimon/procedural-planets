@@ -42,9 +42,9 @@ def build(ctx):
 		includes 		= 'externals',
 		source			= ctx.path.ant_glob([
 								'source/*.cc',
-								#'source/**/*.cc',
+								'source/**/*.cc',
 								'source/*.c',
-								#'source/**/*.c'
+								'source/**/*.c'
 							])
 	)
 

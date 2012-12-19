@@ -19,7 +19,9 @@
 
 #include <osg/Geode>
 #include <osg/MatrixTransform>
+#include <osg/PolygonMode>
 #include <osg/ShapeDrawable>
+#include <osg/StateSet>
 #include <osgDB/ReadFile>
 #include <osgViewer/Viewer>
 
@@ -30,6 +32,17 @@ int main (int argc, char** argv) {
 	
 	osgViewer::Viewer viewer;
 	viewer.setUpViewInWindow((1280 - 800) / 2, (800 - 600) / 2, 800, 600);
+
+	osg::StateSet* stateset = viewer.getCamera()->getOrCreateStateSet();
+	osg::PolygonMode* polyModeObj = dynamic_cast<osg::PolygonMode*>(stateset->getAttribute(osg::StateAttribute::POLYGONMODE));
+    if (!polyModeObj) {
+        polyModeObj = new osg::PolygonMode;
+        stateset->setAttribute(polyModeObj);
+    }
+	polyModeObj->setMode(
+		osg::PolygonMode::FRONT,
+		osg::PolygonMode::LINE
+	);
 
 	osg::ref_ptr<osg::Group> root = new osg::Group;
 
